@@ -1,8 +1,5 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
-import FloatingButtons from '@/components/FloatingButtons'
 
 export const metadata: Metadata = {
   title: 'VisitKitai - Откройте Китай с нами',
@@ -18,10 +15,7 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className="min-h-screen bg-white text-gray-900">
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
-        <FloatingButtons />
+        {children}
       </body>
     </html>
   )
