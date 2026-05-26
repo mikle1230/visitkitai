@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { LayoutDashboard, Package, LogOut, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Package, LogOut, Menu, X, Upload, Image as ImageIcon } from 'lucide-react'
 
 export default function AdminLayout({
   children,
@@ -14,6 +14,9 @@ export default function AdminLayout({
   const pathname = usePathname()
   const [loading, setLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [logoUploading, setLogoUploading] = useState(false)
+  const [logoUrl, setLogoUrl] = useState('/logo.png')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const isLoginPage = pathname === '/admin/login'
 
@@ -43,6 +46,40 @@ export default function AdminLayout({
     router.push('/admin/login')
   }
 
+  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setLogoUploading(true)
+
+    try {
+      const formData = new FormData()
+      formData.append('logo', file)
+
+      const response = await fetch('/api/upload-logo', {
+        method: 'POST',
+        body: formData
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setLogoUrl(`${data.logoUrl}?t=${Date.now()}`)
+        alert('Logo uploaded successfully!')
+      } else {
+        alert(data.error || 'Upload failed')
+      }
+    } catch (error) {
+      console.error('Upload error:', error)
+      alert('Upload failed')
+    } finally {
+      setLogoUploading(false)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }
+
   if (loading && !isLoginPage) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -62,9 +99,8 @@ export default function AdminLayout({
       {/* Mobile Header */}
       <div className="lg:hidden bg-white border-b px-4 py-3 flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <span className="text-xl font-bold text-primary">Visit</span>
-          <span className="text-xl font-bold text-accent-gold">Kitai</span>
-          <span className="text-gray-400 ml-2">Admin</span>
+          <img src="/logo.png" alt="VisitKitai" className="h-8 w-auto" />
+          <span className="text-gray-400">Admin</span>
         </div>
         <button onClick={() => setSidebarOpen(!sidebarOpen)}>
           {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -83,11 +119,62 @@ export default function AdminLayout({
           <div className="h-full flex flex-col">
             {/* Logo */}
             <div className="p-6 border-b hidden lg:block">
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 mb-4">
                 <span className="text-xl font-bold text-primary">Visit</span>
                 <span className="text-xl font-bold text-accent-gold">Kitai</span>
               </div>
-              <p className="text-gray-500 text-sm mt-1">Admin Panel</p>
+
+              {/* Logo Upload Section */}
+              <div className="space-y-3">
+                <label className="block text-sm font-medium text-gray-700">
+                  Site Logo
+                </label>
+                <div className="flex items-center space-x-3">
+                  <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center border-2 border-dashed border-gray-300">
+                    {logoUploading ? (
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                    ) : (
+                      <img
+                        src={logoUrl}
+                        alt="Site Logo"
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement
+                          target.style.display = 'none'
+                        }}
+                      />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp"
+                      onChange={handleLogoUpload}
+                      className="hidden"
+                      id="logo-upload"
+                    />
+                    <label
+                      htmlFor="logo-upload"
+                      className={`
+                        cursor-pointer inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium
+                        ${logoUploading
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-primary text-white hover:bg-primary/90'
+                        }
+                      `}
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      {logoUploading ? 'Uploading...' : 'Upload Logo'}
+                    </label>
+                    <p className="text-xs text-gray-500 mt-1">
+                      PNG, JPG, SVG, WebP (max 5MB)
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-gray-500 text-sm mt-4">Admin Panel</p>
             </div>
 
             {/* Navigation */}

@@ -7,9 +7,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand */}
           <div>
-            <div className="flex items-center space-x-2 mb-4">
-              <span className="text-2xl font-bold">Visit</span>
-              <span className="text-2xl font-bold text-accent-gold">Kitai</span>
+            <div className="flex items-center mb-4">
+              <img src="/logo.png" alt="VisitKitai" className="h-20 w-auto" />
             </div>
             <p className="text-gray-300 text-sm">
               Премиум туры в Китай для российских туристов. Индивидуальные программы, бизнес-туры, семейный отдых.
