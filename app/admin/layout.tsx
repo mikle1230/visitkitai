@@ -119,62 +119,11 @@ export default function AdminLayout({
           <div className="h-full flex flex-col">
             {/* Logo */}
             <div className="p-6 border-b hidden lg:block">
-              <div className="flex items-center space-x-2 mb-4">
+              <div className="flex items-center space-x-2">
                 <span className="text-xl font-bold text-primary">Visit</span>
                 <span className="text-xl font-bold text-accent-gold">Kitai</span>
               </div>
-
-              {/* Logo Upload Section */}
-              <div className="space-y-3">
-                <label className="block text-sm font-medium text-gray-700">
-                  Site Logo
-                </label>
-                <div className="flex items-center space-x-3">
-                  <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center border-2 border-dashed border-gray-300">
-                    {logoUploading ? (
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                    ) : (
-                      <img
-                        src={logoUrl}
-                        alt="Site Logo"
-                        className="w-full h-full object-contain"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement
-                          target.style.display = 'none'
-                        }}
-                      />
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp"
-                      onChange={handleLogoUpload}
-                      className="hidden"
-                      id="logo-upload"
-                    />
-                    <label
-                      htmlFor="logo-upload"
-                      className={`
-                        cursor-pointer inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium
-                        ${logoUploading
-                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                          : 'bg-primary text-white hover:bg-primary/90'
-                        }
-                      `}
-                    >
-                      <Upload className="w-4 h-4 mr-2" />
-                      {logoUploading ? 'Uploading...' : 'Upload Logo'}
-                    </label>
-                    <p className="text-xs text-gray-500 mt-1">
-                      PNG, JPG, SVG, WebP (max 5MB)
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <p className="text-gray-500 text-sm mt-4">Admin Panel</p>
+              <p className="text-gray-500 text-sm mt-1">Admin Panel</p>
             </div>
 
             {/* Navigation */}
@@ -186,6 +135,40 @@ export default function AdminLayout({
                 <LayoutDashboard className="w-5 h-5" />
                 <span>Dashboard</span>
               </Link>
+
+              {/* Logo Upload */}
+              <div className="mt-2">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp"
+                  onChange={handleLogoUpload}
+                  className="hidden"
+                  id="logo-upload"
+                />
+                <label
+                  htmlFor="logo-upload"
+                  className={`
+                    flex items-center space-x-3 px-4 py-3 rounded-lg cursor-pointer transition-colors
+                    ${logoUploading
+                      ? 'text-gray-400 cursor-not-allowed'
+                      : 'text-gray-700 hover:bg-gray-100'
+                    }
+                  `}
+                >
+                  {logoUploading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                      <span>Uploading...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-5 h-5" />
+                      <span>Upload Logo</span>
+                    </>
+                  )}
+                </label>
+              </div>
             </nav>
 
             {/* Logout */}
